@@ -71,20 +71,26 @@ class NotificationKit:
 			client.post(self.dingding_webhook, json=data)
 
 	def send_feishu(self, title: str, content: str):
-		if not self.feishu_webhook:
-			raise ValueError('Feishu Webhook not configured')
+        if not self.feishu_webhook:
+            raise ValueError('Feishu Webhook not configured')
 
-		# 使用 text 模式，稳定性最高，支持换行和 Emoji
-		data = {
-			'msg_type': 'text',
-			'content': {
-				'text': f"{title}\n{'-'*20}\n{content}"
-			}
-		}
-		with httpx.Client(timeout=30.0) as client:
-			response = client.post(self.feishu_webhook, json=data)
-			# 打印一下结果，方便在 GitHub Actions 日志里排查
-			print(f"[Feishu Debug]: {response.text}")
+        # --- 暴力调试开始 ---
+        print(f"DEBUG [Feishu]: Received title -> {title}")
+        print(f"DEBUG [Feishu]: Received content length -> {len(str(content))}")
+        
+        # 强制转换并给一个保底值，防止 content 是 None
+        safe_content = str(content) if content else "脚本传递的内容为空"
+        # --- 暴力调试结束 ---
+
+        data = {
+            'msg_type': 'text',
+            'content': {
+                'text': f"【{title}】\n内容详情：\n{safe_content}"
+            }
+        }
+        with httpx.Client(timeout=30.0) as client:
+            resp = client.post(self.feishu_webhook, json=data)
+            print(f"DEBUG [Feishu Response]: {resp.text}")
 
 	def send_wecom(self, title: str, content: str):
 		if not self.weixin_webhook:
