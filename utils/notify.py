@@ -71,16 +71,15 @@ class NotificationKit:
 			client.post(self.dingding_webhook, json=data)
 
 	def send_feishu(self, title: str, content: str):
-        if not self.feishu_webhook:
-            raise ValueError('Feishu Webhook not configured')
+		if not self.feishu_webhook:
+			raise ValueError('Feishu Webhook not configured')
 
-        # --- 暴力调试开始 ---
-        print(f"DEBUG [Feishu]: Received title -> {title}")
-        print(f"DEBUG [Feishu]: Received content length -> {len(str(content))}")
-        
-        # 强制转换并给一个保底值，防止 content 是 None
-        safe_content = str(content) if content else "脚本传递的内容为空"
-        # --- 暴力调试结束 ---
+		data = {
+			'msg_type': 'text',
+			'content': {'text': f"【{title}】\n内容详情：\n{content}"}
+		}
+		with httpx.Client(timeout=30.0) as client:
+			client.post(self.feishu_webhook, json=data)
 
         data = {
             'msg_type': 'text',
