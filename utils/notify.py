@@ -79,17 +79,8 @@ class NotificationKit:
 			'content': {'text': f"【{title}】\n内容详情：\n{content}"}
 		}
 		with httpx.Client(timeout=30.0) as client:
-			client.post(self.feishu_webhook, json=data)
-
-        data = {
-            'msg_type': 'text',
-            'content': {
-                'text': f"【{title}】\n内容详情：\n{safe_content}"
-            }
-        }
-        with httpx.Client(timeout=30.0) as client:
-            resp = client.post(self.feishu_webhook, json=data)
-            print(f"DEBUG [Feishu Response]: {resp.text}")
+			resp = client.post(self.feishu_webhook, json=data)
+			print(f"DEBUG [Feishu Response]: {resp.text}")
 
 	def send_wecom(self, title: str, content: str):
 		if not self.weixin_webhook:
